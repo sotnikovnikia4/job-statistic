@@ -13,23 +13,23 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
 
-        <RollingFile name="RollingFileAppender"
-                     fileName="logs/rolling-application.log"
-                     filePattern="logs/rolling-application-%d{yyyy-MM-dd}-%i.log.gz">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="10MB"/>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-            </Policies>
-            <DefaultRolloverStrategy max="7"/>
-        </RollingFile>
+<!--        <RollingFile name="RollingFileAppender"-->
+<!--                     fileName="logs/rolling-application.log"-->
+<!--                     filePattern="logs/rolling-application-%d{yyyy-MM-dd}-%i.log.gz">-->
+<!--            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
+<!--            <Policies>-->
+<!--                <SizeBasedTriggeringPolicy size="10MB"/>-->
+<!--                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>-->
+<!--            </Policies>-->
+<!--            <DefaultRolloverStrategy max="7"/>-->
+<!--        </RollingFile>-->
     </Appenders>
 
     <Loggers>
         <Root level="info">
 <!--            <AppenderRef ref="ConsoleAppender"/>-->
             <AppenderRef ref="FileAppender"/>
-            <AppenderRef ref="RollingFileAppender"/>
+<!--            <AppenderRef ref="RollingFileAppender"/>-->
         </Root>
 
         <Logger name="ru.nikita_sotnikov" level="debug" additivity="false">

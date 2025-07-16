@@ -67,6 +67,48 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
+
+            <!-- Plugin to create an executable JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version> <!-- Use a recent version -->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- Add all project dependencies to the Class-Path in the JAR manifest -->
+                            <addClasspath>true</addClasspath>
+                            <!-- Specifies the directory where the dependencies will be copied -->
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <!-- Specify the main class of your application -->
+                            <!-- IMPORTANT: Replace 'ru.nikita_sotnikov.job_statistic.Main' with your actual main class -->
+                            <mainClass>ru.nikita_sotnikov.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin to copy dependencies to a 'lib' folder inside the target directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version> <!-- Use a recent version -->
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Output directory for the dependencies -->
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <!-- Keep the original file names -->
+                            <stripVersion>false</stripVersion>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -9,4 +9,3 @@ create table jobs(
 drop table jobs;
 
 select * from jobs;
-

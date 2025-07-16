@@ -1,15 +1,14 @@
 package ru.nikita_sotnikov;
 
-import org.w3c.dom.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SyncService {
+    private static final Logger log = LoggerFactory.getLogger(SyncService.class);
     private final XmlParser xmlParser;
     private final DBOperations dbOperations;
 
@@ -19,6 +18,8 @@ public class SyncService {
     }
 
     public void sync(String fileName) throws Exception {
+        log.info("Start synchronization from file '{}'", fileName);
+
         Map<JobKey, Job> jobsFromFile = xmlParser.parse(fileName);
         Map<JobKey, Job> jobsFromDB = dbOperations.getJobMap();
 
@@ -41,7 +42,12 @@ public class SyncService {
         }
 
         List<Job> deleteList = new ArrayList<>(jobsFromDB.values());
+        log.info("Created lists with insertions, updates and deletions");
 
         dbOperations.refreshDB(insertList, updateList, deleteList);
+
+        String resultInfo = String.format("Inserted: %d, updated: %d, deleted: %d, total: %d.", insertList.size(), updateList.size(), deleteList.size(), jobsFromFile.size());
+        log.info(resultInfo);
+        System.out.println(resultInfo);
     }
 }

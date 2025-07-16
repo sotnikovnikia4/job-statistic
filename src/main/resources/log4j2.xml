@@ -5,9 +5,9 @@
     </Properties>
 
     <Appenders>
-        <Console name="ConsoleAppender" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-        </Console>
+<!--        <Console name="ConsoleAppender" target="SYSTEM_OUT">-->
+<!--            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
+<!--        </Console>-->
 
         <File name="FileAppender" fileName="${logFileName}">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
@@ -27,13 +27,13 @@
 
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="ConsoleAppender"/>
+<!--            <AppenderRef ref="ConsoleAppender"/>-->
             <AppenderRef ref="FileAppender"/>
             <AppenderRef ref="RollingFileAppender"/>
         </Root>
 
-        <Logger name="com.example" level="debug" additivity="false">
-            <AppenderRef ref="ConsoleAppender"/>
+        <Logger name="ru.nikita_sotnikov" level="debug" additivity="false">
+<!--            <AppenderRef ref="ConsoleAppender"/>-->
             <AppenderRef ref="FileAppender"/>
         </Logger>
 

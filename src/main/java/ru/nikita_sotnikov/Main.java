@@ -2,9 +2,6 @@ package ru.nikita_sotnikov;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class Main {
     private static final String SYNC_COMMAND = "sync";
@@ -22,9 +19,6 @@ public class Main {
 
     private static void runApp(String[] args) throws Exception{
         Configuration configuration = Configuration.create("application.properties");
-
-        PlatformTransactionManager platformTransactionManager = new DataSourceTransactionManager(configuration.getDataSource());
-        TransactionTemplate transactionTemplate = new TransactionTemplate(platformTransactionManager);
 
         SyncService syncService = configuration.getSyncService();
         SaveService saveService = configuration.getSaveService();

@@ -1,5 +1,7 @@
 package ru.nikita_sotnikov;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,10 +16,15 @@ import java.util.List;
 import java.util.Map;
 
 public class XmlParser {
+    private static final Logger log = LoggerFactory.getLogger(XmlParser.class);
+
     public Map<JobKey, Job> parse(String fileName) throws Exception {
+        log.info("Start parsing.");
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = builder.parse(new File(fileName));
         document.getDocumentElement().normalize();
+
+        log.info("Opened file '{}'", fileName);
 
         Element root = document.getDocumentElement();
 
@@ -35,6 +42,8 @@ public class XmlParser {
                 NodeList children = node.getChildNodes();
 
                 Job job = createJob(children);
+                checkJob(job);
+
                 JobKey jobKey = new JobKey(job.getDepCode(), job.getDepJob());
 
                 if(jobs.containsKey(jobKey)) {
@@ -48,6 +57,8 @@ public class XmlParser {
                 throw new SAXException("Invalid format: element is not 'job' in 'jobs'.");
             }
         }
+
+        log.info("Parsed {} jobs from file '{}'", jobs.size(), fileName);
 
         return jobs;
     }
@@ -73,6 +84,10 @@ public class XmlParser {
             }
         }
 
+        return job;
+    }
+
+    private void checkJob(Job job) throws Exception{
         if(job.getDepCode() == null || job.getDepJob() == null) {
             throw new SAXException("Invalid format: depCode='null' or depJob='null'.");
         }
@@ -85,11 +100,11 @@ public class XmlParser {
         else if(job.getDescription() != null && job.getDescription().length() > 255){
             throw new SAXException(String.format("Invalid format: description.length > 100, description='%s'.", job.getDescription()));
         }
-
-        return job;
     }
 
     public Document saveToDocument(List<Job> jobs) throws Exception{
+        log.info("Creating xml document.");
+
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = builder.newDocument();
 
@@ -115,6 +130,8 @@ public class XmlParser {
 
             root.appendChild(jobElement);
         }
+
+        log.info("Xml document created.");
 
         return document;
     }

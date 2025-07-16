@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jobs>
     <job>
-        <depCode>3</depCode>
+        <depCode>1</depCode>
         <depJob>Worker</depJob>
-        <description>Some simple worker</description>
+        <description>Not a simple worker</description>
     </job>
     <job>
         <depCode>1</depCode>
@@ -11,8 +11,8 @@
         <description>Some simple workersdfdsfsf</description>
     </job>
     <job>
-        <depCode>1</depCode>
+        <depCode>3</depCode>
         <depJob>Worker</depJob>
-        <description>Not a simple worker</description>
+        <description>Some simple worker</description>
     </job>
 </jobs>

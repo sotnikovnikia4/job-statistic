@@ -1,8 +1,10 @@
 package ru.nikita_sotnikov;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DBOperations {
+    private static final Logger log = LoggerFactory.getLogger(DBOperations.class);
     private final String TABLE_NAME = "jobs";
 
     private final JdbcTemplate jdbcTemplate;
@@ -68,7 +71,7 @@ public class DBOperations {
     }
 
     public Map<JobKey, Job> getJobMap(){
-        List<Job> result = jdbcTemplate.query("SELECT * FROM " + TABLE_NAME, new JobMapper());
+        List<Job> result = getJobList();
 
         Map<JobKey, Job> jobsFromDB = new HashMap<>();
 
@@ -80,17 +83,29 @@ public class DBOperations {
     }
 
     public List<Job> getJobList(){
-        return jdbcTemplate.query("SELECT * FROM " + TABLE_NAME, new JobMapper());
+        List<Job> jobs = jdbcTemplate.query("SELECT * FROM " + TABLE_NAME, new JobMapper());
+
+        log.info("Loaded {} jobs from database", jobs.size());
+
+        return jobs;
     }
 
     public void refreshDB(List<Job> insertList, List<Job> updateList, List<Job> deleteList) {
-        transactionTemplate.execute(_ -> {
-            insertJobs(insertList);
-            updateJobs(updateList);
-            deleteJobs(deleteList);
+        log.info("Start transaction");
 
+        try{
+            transactionTemplate.execute(_ -> {
+                insertJobs(insertList);
+                updateJobs(updateList);
+                deleteJobs(deleteList);
 
-            return null;
-        });
+                return null;
+            });
+
+            log.info("Transaction successful");
+        }
+        catch(TransactionException e){
+            log.error("Transaction error.", e);
+        }
     }
 }

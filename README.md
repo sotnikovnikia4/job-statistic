@@ -21,13 +21,14 @@
       (Замените на свои параметры подключения к БД.)
 
 ### Сборка проекта
-
-**Для Maven:**
+Нужен установленный Maven
 ```bash
 mvn clean install
 ```
 
 ### Запуск проекта
+Нужна установленная java версии не ниже 22
+
 С консоли:
 ```bash
 java -jar ./target/job-statistic-1.0-SNAPSHOT.jar sync ./job.xml

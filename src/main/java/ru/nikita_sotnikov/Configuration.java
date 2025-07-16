@@ -11,6 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Centralized configuration class for the application.
+ * This class is responsible for loading application properties from a file,
+ * and providing configured instances of various services and components
+ * such as {@link DataSource}, {@link JdbcTemplate}, {@link TransactionTemplate},
+ * {@link DBOperations}, {@link XmlParser}, {@link SyncService}, and {@link SaveService}.
+ */
 public class Configuration {
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
@@ -23,8 +30,19 @@ public class Configuration {
     private SyncService syncService;
     private SaveService saveService;
 
+    /**
+     * Private constructor to prevent direct instantiation.
+     * Use the static {@link #create(String)} method to get a configured instance.
+     */
     private Configuration(){}
 
+    /**
+     * Creates and initializes a new {@link Configuration} instance by loading properties
+     * from the specified properties file.
+     *
+     * @param propertiesFile The name of the properties file to load from the classpath.
+     * @return A new, configured {@link Configuration} instance.
+     */
     public static Configuration create(String propertiesFile){
         Configuration config = new Configuration();
         config.properties = loadPropertiesFromClasspath(propertiesFile);
@@ -32,21 +50,34 @@ public class Configuration {
         return config;
     }
 
+    /**
+     * Loads properties from a specified file located in the classpath.
+     *
+     * @param fileName The name of the properties file.
+     * @return A {@link Properties} object containing the loaded key-value pairs.
+     * @throws RuntimeException if the file is not found or an I/O error occurs during loading.
+     */
     private static Properties loadPropertiesFromClasspath(String fileName) {
         Properties properties = new Properties();
         // Используем ClassLoader для получения InputStream к ресурсу
         try (InputStream input = Main.class.getClassLoader().getResourceAsStream(fileName)) {
             if (input == null) {
-                throw new FileNotFoundException("Файл не найден");
+                throw new FileNotFoundException("File not found");
             }
             properties.load(input);
         } catch (IOException ex) {
-            System.err.println("Ошибка при загрузке настроек из файла" + ex.getMessage());
+            throw new RuntimeException("Failed to load properties from file: " + fileName, ex);
         }
 
         return properties;
     }
 
+    /**
+     * Returns a singleton instance of {@link DataSource}.
+     * If the instance does not exist, it is created using properties loaded from the configuration file.
+     *
+     * @return The configured {@link DataSource} instance.
+     */
     public DataSource getDataSource() {
         if(dataSource == null){
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -62,6 +93,12 @@ public class Configuration {
         return dataSource;
     }
 
+    /**
+     * Returns a singleton instance of {@link JdbcTemplate}.
+     * If the instance does not exist, it is created using the configured {@link DataSource}.
+     *
+     * @return The configured {@link JdbcTemplate} instance.
+     */
     public JdbcTemplate getJdbcTemplate() {
         if(jdbcTemplate == null){
             jdbcTemplate = new JdbcTemplate(getDataSource());
@@ -69,6 +106,13 @@ public class Configuration {
         return jdbcTemplate;
     }
 
+    /**
+     * Returns a singleton instance of {@link TransactionTemplate}.
+     * If the instance does not exist, it is created using a {@link DataSourceTransactionManager}
+     * with the configured {@link DataSource}.
+     *
+     * @return The configured {@link TransactionTemplate} instance.
+     */
     public TransactionTemplate getTransactionTemplate(){
         if(transactionTemplate == null){
             transactionTemplate = new TransactionTemplate(new DataSourceTransactionManager(getDataSource()));
@@ -77,6 +121,13 @@ public class Configuration {
         return transactionTemplate;
     }
 
+    /**
+     * Returns a singleton instance of {@link DBOperations}.
+     * If the instance does not exist, it is created using the configured {@link JdbcTemplate}
+     * and {@link TransactionTemplate}.
+     *
+     * @return The configured {@link DBOperations} instance.
+     */
     public DBOperations getDbOperations(){
         if(dbOperations == null){
             dbOperations = new DBOperations(getJdbcTemplate(), getTransactionTemplate());
@@ -85,6 +136,13 @@ public class Configuration {
         return dbOperations;
     }
 
+    /**
+     * Returns a singleton instance of {@link SaveService}.
+     * If the instance does not exist, it is created using the configured {@link DBOperations}
+     * and {@link XmlParser}.
+     *
+     * @return The configured {@link SaveService} instance.
+     */
     public SaveService getSaveService() {
         if(saveService == null){
             saveService = new SaveService(getDbOperations(), getXmlParser());
@@ -93,6 +151,13 @@ public class Configuration {
         return saveService;
     }
 
+    /**
+     * Returns a singleton instance of {@link SyncService}.
+     * If the instance does not exist, it is created using the configured {@link XmlParser}
+     * and {@link DBOperations}.
+     *
+     * @return The configured {@link SyncService} instance.
+     */
     public SyncService getSyncService() {
         if(syncService == null){
             syncService = new SyncService(getXmlParser(), getDbOperations());
@@ -101,6 +166,12 @@ public class Configuration {
         return syncService;
     }
 
+    /**
+     * Returns a singleton instance of {@link XmlParser}.
+     * If the instance does not exist, it is created.
+     *
+     * @return The configured {@link XmlParser} instance.
+     */
     private XmlParser getXmlParser() {
         if(xmlParser == null){
             xmlParser = new XmlParser();
